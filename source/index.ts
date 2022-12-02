@@ -4,10 +4,9 @@ declare global {
   }
 }
 
-type EventType = {
+type ArticleType = {
   id: number;
   title: string;
-  postDate: string;
   url: string;
   summary: string;
   image: {
@@ -16,6 +15,7 @@ type EventType = {
   }[];
   categories: {
     title: string;
+    url: string;
   }[];
 };
 
@@ -23,7 +23,7 @@ type VariablesType = {
   related?: string[];
 };
 
-const EventsQuery = `
+const ArticlesQuery = `
   query getArticlesByCategories($related: [QueryArgument]) {
     entries(
       section: "articles", 
@@ -43,9 +43,9 @@ const EventsQuery = `
             altText: genericText
           }
         }
-        categories:categoryCampusUnitsMultiple {
+        categories:categoryTodaySectionMultiple {
           title
-          id
+          url
         }
       }
     }
@@ -75,19 +75,19 @@ const ELEMENT_NAME = 'umd-today-feed';
 
 const template = document.createElement('template');
 
-const TODAY_PRODUCTION_URL = 'https://today.umd.edu/';
+const TODAY_PRODUCTION_URL = 'https://today.umd.edu';
 
 const CONTAINER_CLASS = 'umd-today-feed-container';
 const LOADER_CLASS = 'umd-today-loader';
 const NO_RESULTS_CLASS = 'umd-today-no-results';
 const CONTAINER_CONTENT_CLASS = 'umd-today-feed-content-container';
-const EVENT_CONTAINER_CLASS = 'umd-today-feed-event-container';
-const EVENT_IMAGE_CONTAINER_CLASS = 'umd-today-feed-event-image-container';
-const EVENT_TEXT_CONTAINER_CLASS = 'umd-today-feed-event-text-container';
-const EVENT_TEXT_DATE_CLASS = 'umd-today-feed-event-text-date';
-const EVENT_TEXT_TITLE_CLASS = 'umd-today-feed-event-text-title';
-const EVENT_CTA_CLASS = 'umd-today-feed-event-cta';
-const DATA_CONTAINER_AMOUNT = 'data-event-amount';
+const ARTICLE_CONTAINER_CLASS = 'umd-today-feed-article-container';
+const ARTICLE_IMAGE_CONTAINER_CLASS = 'umd-today-feed-article-image-container';
+const ARTICLE_TEXT_CONTAINER_CLASS = 'umd-today-feed-article-text-container';
+const ARTICLE_TEXT_CATEGORY_CLASS = 'umd-today-feed-article-text-category';
+const ARTICLE_TEXT_DATE_CLASS = 'umd-today-feed-article-text-date';
+const ARTICLE_TEXT_TITLE_CLASS = 'umd-today-feed-article-text-title';
+const DATA_CONTAINER_AMOUNT = 'data-article-amount';
 
 template.innerHTML = `
   <style>
@@ -210,29 +210,21 @@ template.innerHTML = `
      }
 
      @media (min-width: ${Breakpoints.tabletMin}px) {
-      [${DATA_CONTAINER_AMOUNT}="1"] .${EVENT_CONTAINER_CLASS} {
+      [${DATA_CONTAINER_AMOUNT}="1"] .${ARTICLE_CONTAINER_CLASS} {
         display: flex;
       }
     }
 
     @media (min-width: ${Breakpoints.tabletMin}px) {
-      [${DATA_CONTAINER_AMOUNT}="1"] .${EVENT_IMAGE_CONTAINER_CLASS} {
+      [${DATA_CONTAINER_AMOUNT}="1"] .${ARTICLE_IMAGE_CONTAINER_CLASS} {
         width: 40%;
       }
     }
 
     @media (min-width: ${Breakpoints.tabletMin}px) {
-      [${DATA_CONTAINER_AMOUNT}="1"] .${EVENT_TEXT_CONTAINER_CLASS}  {
+      [${DATA_CONTAINER_AMOUNT}="1"] .${ARTICLE_TEXT_CONTAINER_CLASS}  {
         margin-left: 20px;
       }
-    }
-
-    [${DATA_CONTAINER_AMOUNT}="1"] .${EVENT_CTA_CLASS} {
-      position: relative;
-      bottom: 0;
-      left: 0;
-      margin-top: 20px;
-      display: inline-block;
     }
 
     @media (min-width: ${Breakpoints.tabletMin}px) {
@@ -247,31 +239,27 @@ template.innerHTML = `
       }
     }
 
-    [${DATA_CONTAINER_AMOUNT}="3"] > div {
-     
-    }
-
-    .${EVENT_CONTAINER_CLASS} {
+    .${ARTICLE_CONTAINER_CLASS} {
       border: 1px solid ${Colors.grayLight};
       position: relative;
     }
 
-    .${EVENT_IMAGE_CONTAINER_CLASS} {
+    .${ARTICLE_IMAGE_CONTAINER_CLASS} {
       aspect-ratio: 16/9;
     }
 
-    .${EVENT_IMAGE_CONTAINER_CLASS} > a {
+    .${ARTICLE_IMAGE_CONTAINER_CLASS} > a {
       height: 100%;
       display: block;
       overflow: hidden;
     }
 
-    .${EVENT_IMAGE_CONTAINER_CLASS} > a:hover img,
-    .${EVENT_IMAGE_CONTAINER_CLASS} > a:focus img {
+    .${ARTICLE_IMAGE_CONTAINER_CLASS} > a:hover img,
+    .${ARTICLE_IMAGE_CONTAINER_CLASS} > a:focus img {
       scale: 1.05;
     }
 
-    .${EVENT_IMAGE_CONTAINER_CLASS} img {
+    .${ARTICLE_IMAGE_CONTAINER_CLASS} img {
       object-fit: cover;
       object-position: center;
       height: 100%;
@@ -280,81 +268,52 @@ template.innerHTML = `
       transition: scale 0.3s ease-in-out;
     }
 
-    .${EVENT_TEXT_CONTAINER_CLASS} {
+    .${ARTICLE_TEXT_CONTAINER_CLASS} {
       border-top: 1px solid ${Colors.grayLight};
       padding: 30px 20px;
-      padding-bottom: 60px;
     }
 
-    .${EVENT_TEXT_CONTAINER_CLASS} p {
+    .${ARTICLE_TEXT_CONTAINER_CLASS} hr {
+      margin: 15px 0 !important;
+      padding: 0 !important;
+      height: 1px !important;
+      background-color: ${Colors.grayLight} !important;
+      border: none !important;
+      width: 80% !important;
+      max-width: 240px !important;
+    }
+
+    .${ARTICLE_TEXT_CONTAINER_CLASS} p {
       line-height: 1.4em;
       font-size: 16px;
     }
 
-    .${EVENT_TEXT_TITLE_CLASS} {
+    .${ARTICLE_TEXT_TITLE_CLASS} {
       font-size: 20px;
       line-height: 1.2em;
       font-weight: 700;
       color: ${Colors.grayDark};
-      margin-bottom: 20px;
     }
 
-    .${EVENT_TEXT_TITLE_CLASS} a {
+    .${ARTICLE_TEXT_TITLE_CLASS} a {
       color: currentColor;
       text-decoration: none;
       transition: color 0.3s ease-in-out;
     }
 
-    .${EVENT_TEXT_TITLE_CLASS} a:hover,
-    .${EVENT_TEXT_TITLE_CLASS} a:focus {
+    .${ARTICLE_TEXT_TITLE_CLASS} a:hover,
+    .${ARTICLE_TEXT_TITLE_CLASS} a:focus {
       color: ${Colors.redDark};
     }
 
-    .${EVENT_TEXT_DATE_CLASS} {
-      margin-bottom: 20px;
+    .${ARTICLE_TEXT_CATEGORY_CLASS} {
+      text-decoration: none;
+      margin-bottom: 10px;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: ${Colors.grayDark};
+      display: block;
       font-weight: 600;
-    }
-
-    .${EVENT_TEXT_DATE_CLASS} {
-      display: flex;
-    }
-
-    .${EVENT_TEXT_DATE_CLASS} > div {
-      background-color: ${Colors.grayLight};
-      padding: 4px 8px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .${EVENT_TEXT_DATE_CLASS} > div:nth-child(2) {
-      margin-left: 10px;
-    }
-
-    .${EVENT_TEXT_DATE_CLASS} > div * {
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .${EVENT_TEXT_DATE_CLASS} > div > span {
-     border-left: 1px solid ${Colors.grayDark};
-     padding-left: 6px;
-     margin-left: 4px;
-     display: inline-block;
-    }
-
-    .${EVENT_CTA_CLASS} {
-      display: inline-block;
-      color: ${Colors.red};
-      transition: color 0.3s ease-in-out;
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-    }
-
-    .${EVENT_CTA_CLASS}:hover,
-    .${EVENT_CTA_CLASS}:focus {
-      color: ${Colors.redDark};
     }
   
   </style>
@@ -391,36 +350,34 @@ const MakeNoResults = () => {
   const text = document.createElement('p');
 
   container.classList.add(NO_RESULTS_CLASS);
-  text.innerHTML = 'There are no events at this time.';
+  text.innerHTML = 'There are no articles at this time.';
 
   container.appendChild(text);
 
   return container;
 };
 
-const MakeContentContainer = ({ eventAmount }: { eventAmount: number }) => {
+const MakeContentContainer = ({ articleAmount }: { articleAmount: number }) => {
   const container = document.createElement('div');
 
   container.classList.add(CONTAINER_CONTENT_CLASS);
-  container.setAttribute(DATA_CONTAINER_AMOUNT, eventAmount.toString());
+  container.setAttribute(DATA_CONTAINER_AMOUNT, articleAmount.toString());
 
   return container;
 };
 
-const MakeImageContainer = (event: EventType) => {
+const MakeImageContainer = (article: ArticleType) => {
   const imageContainer = document.createElement('div');
   const link = document.createElement('a');
   const image = document.createElement('img');
-  imageContainer.classList.add(EVENT_IMAGE_CONTAINER_CLASS);
+  imageContainer.classList.add(ARTICLE_IMAGE_CONTAINER_CLASS);
 
-  link.setAttribute('href', event.url);
+  link.setAttribute('href', article.url);
   link.setAttribute('rel', 'noopener noreferrer');
   link.setAttribute('target', '_blank');
 
-  image.setAttribute('src', `${TODAY_PRODUCTION_URL}${event.image[0].url}`);
-  image.setAttribute('alt', event.image[0].altText);
-
-  console.log(event);
+  image.setAttribute('src', `${TODAY_PRODUCTION_URL}${article.image[0].url}`);
+  image.setAttribute('alt', article.image[0].altText);
 
   link.appendChild(image);
   imageContainer.appendChild(link);
@@ -428,56 +385,49 @@ const MakeImageContainer = (event: EventType) => {
   return imageContainer;
 };
 
-const MakeDate = (event: EventType) => {
-  const dateWrapper = document.createElement('div');
-
-  return dateWrapper;
-};
-
-const MakeTextContainer = (event: EventType) => {
+const MakeTextContainer = (article: ArticleType) => {
   const parser = new DOMParser();
   const textContainer = document.createElement('div');
-  const eventTitle = document.createElement('h2');
+  const articleTitle = document.createElement('h2');
   const link = document.createElement('a');
-  const cta = document.createElement('a');
-  const summaryText = parser.parseFromString(event.summary, 'text/html');
-  const date = MakeDate(event);
+  const line = document.createElement('hr');
+  const category = document.createElement('a');
+  const summaryText = parser.parseFromString(article.summary, 'text/html');
 
-  textContainer.classList.add(EVENT_TEXT_CONTAINER_CLASS);
-  eventTitle.classList.add(EVENT_TEXT_TITLE_CLASS);
+  textContainer.classList.add(ARTICLE_TEXT_CONTAINER_CLASS);
+  articleTitle.classList.add(ARTICLE_TEXT_TITLE_CLASS);
 
-  link.setAttribute('href', event.url);
+  link.setAttribute('href', article.url);
   link.setAttribute('rel', 'noopener noreferrer');
   link.setAttribute('target', '_blank');
-  link.textContent = event.title;
+  link.textContent = article.title;
 
-  cta.classList.add(EVENT_CTA_CLASS);
-  cta.setAttribute('href', event.url);
-  cta.setAttribute('rel', 'noopener noreferrer');
-  cta.setAttribute('target', '_blank');
-  cta.setAttribute('aria-label', `View full event details for ${event.title}`);
-  cta.innerHTML = 'Learn More';
+  if (article.categories.length > 0) {
+    category.setAttribute('href', article.categories[0].url);
+    category.innerHTML = article.categories[0].title;
+    category.classList.add(ARTICLE_TEXT_CATEGORY_CLASS);
+    textContainer.appendChild(category);
+  }
 
-  eventTitle.appendChild(link);
-  textContainer.appendChild(date);
-  textContainer.appendChild(eventTitle);
-  if (event.summary) textContainer.appendChild(summaryText.body);
-  textContainer.appendChild(cta);
+  articleTitle.appendChild(link);
+  textContainer.appendChild(articleTitle);
+  textContainer.appendChild(line);
+  if (article.summary) textContainer.appendChild(summaryText.body);
 
   return textContainer;
 };
 
-const MakeEvent = (event: EventType) => {
-  const eventContainer = document.createElement('div');
-  const image = MakeImageContainer(event);
-  const text = MakeTextContainer(event);
+const MakeArticle = (article: ArticleType) => {
+  const articleContainer = document.createElement('div');
+  const image = MakeImageContainer(article);
+  const text = MakeTextContainer(article);
 
-  eventContainer.classList.add(EVENT_CONTAINER_CLASS);
+  articleContainer.classList.add(ARTICLE_CONTAINER_CLASS);
 
-  eventContainer.appendChild(image);
-  eventContainer.appendChild(text);
+  articleContainer.appendChild(image);
+  articleContainer.appendChild(text);
 
-  return eventContainer;
+  return articleContainer;
 };
 
 const fetchEntries = async ({
@@ -494,7 +444,7 @@ const fetchEntries = async ({
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
-      query: EventsQuery,
+      query: ArticlesQuery,
       variables,
     }),
   });
@@ -558,7 +508,7 @@ export default class TodayFeedElement extends HTMLElement {
       console.error('No filters provided for today feed');
     }
 
-    const addEvents = async () => {
+    const addArticles = async () => {
       const variables: VariablesType = {};
 
       if (this._categories) {
@@ -584,19 +534,19 @@ export default class TodayFeedElement extends HTMLElement {
         console.log('Today Feed Element: No articles found');
       } else {
         const contentContainer = MakeContentContainer({
-          eventAmount: data.length,
+          articleAmount: data.length,
         });
 
-        data.forEach((event: EventType) => {
-          const eventElement = MakeEvent(event);
-          contentContainer.appendChild(eventElement);
+        data.forEach((article: ArticleType) => {
+          const articleElement = MakeArticle(article);
+          contentContainer.appendChild(articleElement);
         });
 
         container.appendChild(contentContainer);
       }
     };
 
-    addEvents();
+    addArticles();
   }
 }
 

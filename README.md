@@ -3,7 +3,7 @@
 ## Installation
 
 ```
-$ yarn add @universityofmaryland/todayfeed
+$ yarn add @universityofmaryland/today-feed
 ```
 
 ## Basic Usage
@@ -11,7 +11,7 @@ $ yarn add @universityofmaryland/todayfeed
 #### Import the Today Feed in your js if you bundle using a transpile with babel or typescript.
 
 ```js
-import '@universityofmaryland/todayfeed';
+import '@universityofmaryland/today-feed';
 ```
 
 #### HTML usage

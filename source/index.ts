@@ -26,9 +26,9 @@ type VariablesType = {
 const ArticlesQuery = `
   query getArticlesByCategories($related: [QueryArgument]) {
     entries(
-      section: "articles", 
+      section: "articles",
       categoryCampusUnitsMultiple: $related,
-      limit: 3 
+      limit: 3
     ) {
       ... on articles_today_Entry {
         id
@@ -100,7 +100,7 @@ template.innerHTML = `
         transform: scale(1);
       }
     }
-    
+
     @keyframes loader-last-animation {
       0% {
         transform: scale(1);
@@ -109,7 +109,7 @@ template.innerHTML = `
         transform: scale(0);
       }
     }
-    
+
     @keyframes loader-middle-animation {
       0% {
         transform: translate(0, 0);
@@ -283,6 +283,7 @@ template.innerHTML = `
       max-width: 240px !important;
     }
 
+    .${ARTICLE_TEXT_CONTAINER_CLASS} body,
     .${ARTICLE_TEXT_CONTAINER_CLASS} p {
       line-height: 1.4em;
       font-size: 16px;
@@ -315,7 +316,6 @@ template.innerHTML = `
       display: block;
       font-weight: 600;
     }
-  
   </style>
 `;
 

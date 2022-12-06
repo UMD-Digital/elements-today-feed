@@ -1,6 +1,6 @@
 {
   "name": "@universityofmaryland/today-feed",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "University of Maryland Today Feed",
   "main": "dist/index.js",
   "module": "dist/index.js",

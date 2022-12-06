@@ -2,7 +2,7 @@ const ArticlesQuery = `
   query getArticlesByCategories($related: [QueryArgument]) {
     entries(
       section: "articles",
-      categoryCampusUnitsMultiple: $related,
+      relatedTo: $related,
       limit: 3
     ) {
       ... on articles_today_Entry {

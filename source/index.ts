@@ -471,7 +471,7 @@ const fetchEntries = async ({
 export default class TodayFeedElement extends HTMLElement {
   _shadow: ShadowRoot;
   _token: string | null = null;
-  _categories: string | null = null;
+  _categories: string[] | null = null;
 
   constructor() {
     super();
@@ -494,7 +494,7 @@ export default class TodayFeedElement extends HTMLElement {
     }
 
     if (name === 'categories' && newValue) {
-      this._categories = newValue;
+      this._categories = newValue.split(',');
     }
   }
 
@@ -512,7 +512,7 @@ export default class TodayFeedElement extends HTMLElement {
       const variables: VariablesType = {};
 
       if (this._categories) {
-        variables.related = [this._categories];
+        variables.related = this._categories;
       }
 
       const container = MakeContainer();

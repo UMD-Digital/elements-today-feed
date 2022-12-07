@@ -6,7 +6,7 @@ declare global {
 export default class TodayFeedElement extends HTMLElement {
     _shadow: ShadowRoot;
     _token: string | null;
-    _categories: string | null;
+    _categories: string[] | null;
     constructor();
     static get observedAttributes(): string[];
     attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void;

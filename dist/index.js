@@ -2,7 +2,7 @@ const ArticlesQuery = `
   query getArticlesByCategories($related: [QueryArgument]) {
     entries(
       section: "articles",
-      categoryCampusUnitsMultiple: $related,
+      relatedTo: $related,
       limit: 3
     ) {
       ... on articles_today_Entry {
@@ -413,7 +413,7 @@ export default class TodayFeedElement extends HTMLElement {
             this._token = newValue;
         }
         if (name === 'categories' && newValue) {
-            this._categories = newValue;
+            this._categories = newValue.split(',');
         }
     }
     connectedCallback() {
@@ -427,7 +427,7 @@ export default class TodayFeedElement extends HTMLElement {
         const addArticles = async () => {
             const variables = {};
             if (this._categories) {
-                variables.related = [this._categories];
+                variables.related = this._categories;
             }
             const container = MakeContainer();
             const loader = MakeLoader();

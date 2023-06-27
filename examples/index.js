@@ -326,7 +326,7 @@ const MakeImageContainer = (article) => {
     link.setAttribute('href', article.url);
     link.setAttribute('rel', 'noopener noreferrer');
     link.setAttribute('target', '_blank');
-    image.setAttribute('src', `${TODAY_PRODUCTION_URL}${article.image[0].url}`);
+    image.setAttribute('src', `${article.image[0].url}`);
     image.setAttribute('alt', article.image[0].altText);
     link.appendChild(image);
     imageContainer.appendChild(link);
